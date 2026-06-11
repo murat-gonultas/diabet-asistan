@@ -36,14 +36,6 @@ The goal is speed with control. Do not open too many tasks at the same time.
 
 ## Ready
 
-### Sprint 1 Finalization
-
-- T-001 Add manual API smoke test file
-- D-001 Update backend README section
-- D-002 Update API design docs with implemented status
-- Q-001 Run manual backend smoke test
-- Q-002 Close Sprint 1 summary
-
 ### Sprint 2 - Flutter MVP Preparation
 
 - F-001 Create Flutter app
@@ -65,7 +57,7 @@ The goal is speed with control. Do not open too many tasks at the same time.
 
 ## Review / Test
 
-- None
+- Manual backend smoke test on local running API
 
 ---
 
@@ -106,7 +98,7 @@ The goal is speed with control. Do not open too many tasks at the same time.
 - B-003 Configure H2 local database
 - B-005 Add global exception handler
 - B-006 Add validation support
-- B-008 Add first integration test
+- B-008 Add integration tests
 - U-001 Create Family entity
 - U-002 Create UserAccount entity
 - U-003 Add CHILD and PARENT roles
@@ -133,6 +125,9 @@ The goal is speed with control. Do not open too many tasks at the same time.
 - FR-002 Create family recipe endpoint
 - FR-003 List recipes by family
 - FR-004 Calculate carbs per serving
+- T-001 Add HTTP smoke test collection
+- T-002 Add executable PowerShell smoke test
+- D-001 Add backend README
 
 ---
 
@@ -161,6 +156,19 @@ POST /api/family-recipes
 GET  /api/family-recipes/family/{familyId}
 ```
 
-## Sprint 1 Next Step
+## Sprint 1 Closure Criteria
 
-Finalize Sprint 1 with backend API smoke tests and README/API documentation update.
+Sprint 1 can be closed when:
+
+- Maven tests pass.
+- Local manual smoke test passes.
+- Backend README is present.
+- Smoke test files are present.
+- Working tree is clean.
+- Changes are pushed to GitHub.
+
+## Sprint 2 Entry Criteria
+
+Sprint 2 can start after backend smoke test passes.
+
+Sprint 2 starts with Flutter mobile MVP.

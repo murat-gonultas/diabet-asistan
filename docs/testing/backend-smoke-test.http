@@ -1,0 +1,90 @@
+﻿### Diabet Asistan Backend Smoke Test
+### Use with VS Code REST Client or IntelliJ HTTP Client.
+### Start backend first:
+### cd backend\diabet-asistan-api
+### .\mvnw.cmd spring-boot:run
+
+@baseUrl = http://localhost:8080
+
+### API Info
+GET {{baseUrl}}/api/info
+
+### Create Family
+POST {{baseUrl}}/api/families
+Content-Type: application/json
+
+{
+  "name": "Demo Family"
+}
+
+### Create Child User
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+  "familyId": 1,
+  "displayName": "Child Demo",
+  "role": "CHILD",
+  "email": null
+}
+
+### Create Parent User
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+  "familyId": 1,
+  "displayName": "Parent Demo",
+  "role": "PARENT",
+  "email": null
+}
+
+### Create Meal
+POST {{baseUrl}}/api/meals
+Content-Type: application/json
+
+{
+  "familyId": 1,
+  "childId": 1,
+  "mealTime": "2026-06-11T18:30:00Z",
+  "mealType": "DINNER",
+  "foodName": "Pasta",
+  "description": "Pasta with tomato sauce",
+  "photoPath": null,
+  "estimatedCarbsGram": 60,
+  "createdByUserId": 1
+}
+
+### Get Pending Reviews
+GET {{baseUrl}}/api/meals/family/1/pending-review
+
+### Correct Meal
+POST {{baseUrl}}/api/meals/1/reviews
+Content-Type: application/json
+
+{
+  "parentId": 2,
+  "reviewStatus": "CORRECTED",
+  "correctedCarbsGram": 70,
+  "comment": "Portion was larger than expected."
+}
+
+### Get Meal
+GET {{baseUrl}}/api/meals/1
+
+### Create Family Recipe
+POST {{baseUrl}}/api/family-recipes
+Content-Type: application/json
+
+{
+  "familyId": 1,
+  "name": "Lentil soup",
+  "description": "Family recipe",
+  "totalCarbsGram": 180,
+  "servings": 6,
+  "defaultPortionDescription": "1 bowl",
+  "createdByParentId": 2
+}
+
+### Get Recipes
+GET {{baseUrl}}/api/family-recipes/family/1
