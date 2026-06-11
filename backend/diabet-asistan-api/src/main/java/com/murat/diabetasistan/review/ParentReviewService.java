@@ -1,4 +1,4 @@
-﻿package com.murat.diabetasistan.review;
+package com.murat.diabetasistan.review;
 
 import java.math.BigDecimal;
 import java.util.List;

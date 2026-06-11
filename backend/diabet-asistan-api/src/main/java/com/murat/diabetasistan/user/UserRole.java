@@ -1,4 +1,4 @@
-﻿package com.murat.diabetasistan.user;
+package com.murat.diabetasistan.user;
 
 public enum UserRole {
     CHILD,

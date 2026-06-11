@@ -1,4 +1,4 @@
-﻿package com.murat.diabetasistan.meal;
+package com.murat.diabetasistan.meal;
 
 import java.math.BigDecimal;
 import java.time.Instant;

@@ -1,4 +1,4 @@
-﻿package com.murat.diabetasistan.recipe;
+package com.murat.diabetasistan.recipe;
 
 import java.util.List;
 

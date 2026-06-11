@@ -1,4 +1,4 @@
-﻿package com.murat.diabetasistan.family;
+package com.murat.diabetasistan.family;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;

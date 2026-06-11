@@ -1,4 +1,4 @@
-﻿package com.murat.diabetasistan.family;
+package com.murat.diabetasistan.family;
 
 import java.time.Instant;
 

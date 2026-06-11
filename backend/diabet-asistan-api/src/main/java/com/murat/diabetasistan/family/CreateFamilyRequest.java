@@ -1,4 +1,4 @@
-﻿package com.murat.diabetasistan.family;
+package com.murat.diabetasistan.family;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

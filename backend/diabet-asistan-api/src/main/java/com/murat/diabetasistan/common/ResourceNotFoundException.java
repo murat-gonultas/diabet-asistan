@@ -1,4 +1,4 @@
-﻿package com.murat.diabetasistan.common;
+package com.murat.diabetasistan.common;
 
 public class ResourceNotFoundException extends RuntimeException {
 

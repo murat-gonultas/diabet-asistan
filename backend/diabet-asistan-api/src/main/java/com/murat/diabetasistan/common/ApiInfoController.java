@@ -1,4 +1,4 @@
-﻿package com.murat.diabetasistan.common;
+package com.murat.diabetasistan.common;
 
 import java.time.Instant;
 import java.util.Map;

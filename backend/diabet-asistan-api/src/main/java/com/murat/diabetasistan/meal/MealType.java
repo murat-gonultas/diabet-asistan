@@ -1,4 +1,4 @@
-﻿package com.murat.diabetasistan.meal;
+package com.murat.diabetasistan.meal;
 
 public enum MealType {
     BREAKFAST,
