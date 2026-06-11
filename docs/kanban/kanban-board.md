@@ -1,4 +1,4 @@
-# Kanban Board - Diabet Asistan
+﻿# Kanban Board - Diabet Asistan
 
 ## Board Columns
 
@@ -36,17 +36,6 @@ The goal is speed with control. Do not open too many tasks at the same time.
 
 ## Ready
 
-### Sprint 0 - Documentation Foundation
-
-- P-001 Product vision
-- P-002 MVP scope
-- P-003 Product backlog
-- P-004 Roadmap
-- S-001 Safety boundaries
-- S-002 No-insulin-dosing policy
-- S-003 Risk register
-- S-004 Data privacy principles
-
 ### Sprint 1 - Backend Foundation
 
 - B-001 Create Spring Boot backend project
@@ -80,10 +69,27 @@ The goal is speed with control. Do not open too many tasks at the same time.
 
 ## Done
 
+### Repository Setup
+
 - Repository created
 - Initial README added
 - Initial .gitignore added
 - Documentation folders created
+
+### Sprint 0 - Product and Safety Foundation
+
+- P-001 Product vision
+- P-002 MVP scope
+- P-003 Product backlog
+- P-004 Roadmap
+- S-001 Safety boundaries
+- S-002 No-insulin-dosing policy
+- S-003 Risk register
+- S-004 Data privacy principles
+- A-001 System overview
+- A-002 Data model
+- A-003 API design
+- K-001 Initial Kanban board
 
 ---
 
@@ -99,7 +105,10 @@ Sprint 0 is done when:
 - No-insulin-dosing policy is documented.
 - Risk register is documented.
 - Data privacy principles are documented.
-- Kanban board is initialized.
+- System overview is documented.
+- Data model is documented.
+- API design is documented.
+- Kanban board is initialized and updated.
 - Changes are committed and pushed.
 
 ## Sprint 1 Entry Criteria
