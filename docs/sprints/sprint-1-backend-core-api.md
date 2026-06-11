@@ -1,0 +1,364 @@
+# Sprint 1 - Backend Core API
+
+## Sprint Goal
+
+Build the first working backend core for Diabet Asistan.
+
+The sprint focused on creating a safety-first Spring Boot REST API that supports the MVP workflow:
+
+```text
+Family
+-> Child and Parent users
+-> Meal record
+-> Parent review/correction
+-> Family recipe
+```
+
+## Safety Boundary
+
+The backend does not calculate insulin doses.
+
+The backend does not control insulin pumps.
+
+The backend does not provide medical treatment recommendations.
+
+The backend stores and exposes carbohydrate logging data only.
+
+## Completed Work
+
+### Repository and Backend Foundation
+
+- Spring Boot backend project created under `backend/diabet-asistan-api`.
+- Java 17 and Maven project structure established.
+- H2 local database configured.
+- PostgreSQL driver prepared for later phases.
+- `.gitattributes` and `.editorconfig` added to reduce encoding and line-ending problems.
+- UTF-8 BOM issues in Java files fixed.
+
+### Common Backend Infrastructure
+
+- Global exception handling added.
+- Standard error response DTO added.
+- Basic API info endpoint added:
+
+```text
+GET /api/info
+```
+
+The `/api/info` endpoint exposes safety flags:
+
+```text
+insulinDoseCalculation = false
+pumpControl = false
+medicalTreatmentRecommendations = false
+```
+
+### Family API
+
+Implemented:
+
+```text
+POST /api/families
+GET  /api/families/{familyId}
+```
+
+Files added:
+
+- `Family`
+- `CreateFamilyRequest`
+- `FamilyResponse`
+- `FamilyRepository`
+- `FamilyService`
+- `FamilyController`
+
+### User API
+
+Implemented:
+
+```text
+POST /api/users
+GET  /api/users/{userId}
+GET  /api/users/family/{familyId}
+```
+
+Files added:
+
+- `UserAccount`
+- `UserRole`
+- `CreateUserRequest`
+- `UserResponse`
+- `UserAccountRepository`
+- `UserAccountService`
+- `UserAccountController`
+
+Supported roles:
+
+```text
+CHILD
+PARENT
+```
+
+### Meal API
+
+Implemented:
+
+```text
+POST /api/meals
+GET  /api/meals/{mealId}
+GET  /api/meals/child/{childId}
+GET  /api/meals/family/{familyId}
+GET  /api/meals/family/{familyId}/pending-review
+```
+
+Files added:
+
+- `MealRecord`
+- `MealType`
+- `MealStatus`
+- `ConfidenceLevel`
+- `CreateMealRequest`
+- `MealResponse`
+- `MealRecordRepository`
+- `MealService`
+- `MealController`
+
+Supported meal statuses:
+
+```text
+DRAFT
+PENDING_PARENT_REVIEW
+APPROVED
+CORRECTED
+```
+
+Supported confidence levels:
+
+```text
+MANUAL
+LOW
+MEDIUM
+HIGH
+```
+
+MVP currently uses `MANUAL`.
+
+### Parent Review API
+
+Implemented:
+
+```text
+POST /api/meals/{mealId}/reviews
+GET  /api/meals/{mealId}/reviews
+```
+
+Files added:
+
+- `ParentReview`
+- `ReviewStatus`
+- `CreateParentReviewRequest`
+- `ParentReviewResponse`
+- `ParentReviewRepository`
+- `ParentReviewService`
+- `ParentReviewController`
+
+Supported review statuses:
+
+```text
+APPROVED
+CORRECTED
+REJECTED
+```
+
+`REJECTED` is reserved for later versions. In Sprint 1, the working flow is approve/correct.
+
+### Family Recipe API
+
+Implemented:
+
+```text
+POST /api/family-recipes
+GET  /api/family-recipes/family/{familyId}
+```
+
+Files added:
+
+- `FamilyRecipe`
+- `CreateFamilyRecipeRequest`
+- `FamilyRecipeResponse`
+- `FamilyRecipeRepository`
+- `FamilyRecipeService`
+- `FamilyRecipeController`
+
+Implemented behavior:
+
+```text
+carbsPerServing = totalCarbsGram / servings
+```
+
+### Tests
+
+Integration tests added and stabilized for Spring Boot 4:
+
+- `MealCoreFlowIntegrationTest`
+- `ParentReviewAndRecipeIntegrationTest`
+
+Test strategy was adapted from MockMvc to random-port HTTP tests using Java `HttpClient`.
+
+Resolved issues:
+
+- UTF-8 BOM compile errors.
+- Missing test dependencies.
+- Spring Boot 4 `AutoConfigureMockMvc` incompatibility.
+- `ObjectMapper` bean autowiring issue by using local ObjectMapper instances in tests.
+
+### Smoke Tests
+
+Added:
+
+```text
+docs/testing/backend-smoke-test.http
+backend/diabet-asistan-api/scripts/smoke-test.ps1
+```
+
+Manual smoke test passed successfully.
+
+Verified flow:
+
+```text
+1. API info endpoint
+2. Create family
+3. Create child user
+4. Create parent user
+5. Create meal record
+6. Pending review list
+7. Parent correction
+8. Corrected meal check
+9. Create family recipe
+10. List family recipes
+```
+
+Result:
+
+```text
+Smoke test completed successfully.
+```
+
+### Git Status
+
+Final local status after smoke test:
+
+```text
+On branch main
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean
+```
+
+## Current Backend Endpoints
+
+```text
+GET  /api/info
+
+POST /api/families
+GET  /api/families/{familyId}
+
+POST /api/users
+GET  /api/users/{userId}
+GET  /api/users/family/{familyId}
+
+POST /api/meals
+GET  /api/meals/{mealId}
+GET  /api/meals/child/{childId}
+GET  /api/meals/family/{familyId}
+GET  /api/meals/family/{familyId}/pending-review
+
+POST /api/meals/{mealId}/reviews
+GET  /api/meals/{mealId}/reviews
+
+POST /api/family-recipes
+GET  /api/family-recipes/family/{familyId}
+```
+
+## Known Technical Notes
+
+### Spring Boot Version
+
+The project currently uses Spring Boot 4.1.0 generated by Spring Initializr.
+
+This caused some testing differences compared to Spring Boot 3, especially around MockMvc-related imports and ObjectMapper bean availability.
+
+Current tests work with random-port HTTP integration tests.
+
+### Encoding
+
+PowerShell-generated Java files initially contained UTF-8 BOM characters. This was fixed.
+
+`.editorconfig` is now present and should help avoid future encoding problems.
+
+### Local Database
+
+The backend currently uses in-memory H2:
+
+```text
+jdbc:h2:mem:diabet_asistan
+```
+
+Data resets on restart. This is acceptable for Sprint 1.
+
+## Sprint 1 Definition of Done
+
+Sprint 1 is done because:
+
+- Backend runs locally.
+- Maven tests pass.
+- Manual smoke test passes.
+- Core MVP backend endpoints exist.
+- Parent review workflow works.
+- Family recipe API works.
+- Safety boundary is visible through `/api/info`.
+- Repo is pushed.
+- Working tree is clean.
+
+## Sprint 1 Result
+
+Status:
+
+```text
+DONE
+```
+
+## Next Sprint
+
+Next sprint:
+
+```text
+Sprint 2 - Flutter Mobile MVP
+```
+
+Main objective:
+
+Build the first Android-first Flutter mobile client that consumes the backend API.
+
+Planned scope:
+
+- Flutter project setup under `mobile/diabet_asistan_app`.
+- Demo child/parent mode.
+- API client.
+- Meal list screen.
+- Create meal screen.
+- Parent pending review screen.
+- Meal correction flow.
+- Family recipe list screen.
+- Basic recipe creation screen if time allows.
+
+## Recommended Start Message for Next Chat
+
+```text
+Sprint 2 - Flutter Mobile MVP
+
+We closed Sprint 1 successfully. Backend is running, Maven tests passed, and the manual smoke test completed successfully.
+
+Now start Sprint 2. Goal: create the Flutter mobile MVP under mobile/diabet_asistan_app. Android-first is enough. The app should connect to the local Spring Boot backend and support demo child/parent mode, meal list, create meal, pending parent review, parent correction, and family recipes.
+
+Continue with the same workflow: update Kanban, work in small tasks, run tests/analyze, commit, push, and close the sprint with a summary.
+```
