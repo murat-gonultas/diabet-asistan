@@ -36,16 +36,19 @@ The goal is speed with control. Do not open too many tasks at the same time.
 
 ## Ready
 
-### Sprint 1 - Backend Foundation
+### Sprint 1 Continued - Parent Review and Recipes
 
-- B-001 Create Spring Boot backend project
-- B-002 Create package structure
-- B-003 Configure H2 local database
-- B-004 Add validation dependency
-- B-005 Add global exception handler
-- U-001 Create Family entity
-- U-002 Create UserAccount entity
-- M-001 Create MealRecord entity
+- R-001 Create ParentReview entity
+- R-002 List pending meals for parent review
+- R-003 Approve meal carbohydrate value
+- R-004 Correct meal carbohydrate value
+- R-005 Store parent comment
+- R-006 Store original and corrected values
+- R-007 Update meal final carbohydrate value
+- FR-001 Create FamilyRecipe entity
+- FR-002 Create family recipe endpoint
+- FR-003 List recipes by family
+- FR-004 Calculate carbs per serving
 
 ---
 
@@ -91,28 +94,51 @@ The goal is speed with control. Do not open too many tasks at the same time.
 - A-003 API design
 - K-001 Initial Kanban board
 
+### Sprint 1 - Backend Foundation
+
+- B-001 Create Spring Boot backend project
+- B-002 Create package structure
+- B-003 Configure H2 local database
+- B-005 Add global exception handler
+- B-006 Add validation support
+- B-008 Add first integration test
+- U-001 Create Family entity
+- U-002 Create UserAccount entity
+- U-003 Add CHILD and PARENT roles
+- U-004 Create family endpoint
+- U-005 Create user endpoint
+- U-006 List users by family
+- M-001 Create MealRecord entity
+- M-002 Add meal type enum
+- M-003 Add meal status enum
+- M-004 Create meal record endpoint
+- M-005 Get meal by ID
+- M-006 List meals by child
+- M-007 List meals by family
+- M-008 Validate carbohydrate values
+- M-009 Add photo reference field
+
 ---
 
-## Sprint 0 Definition of Done
+## Current Backend Endpoints
 
-Sprint 0 is done when:
+```text
+GET  /api/info
 
-- Product vision is documented.
-- MVP scope is documented.
-- Product backlog is documented.
-- Roadmap is documented.
-- Safety boundaries are documented.
-- No-insulin-dosing policy is documented.
-- Risk register is documented.
-- Data privacy principles are documented.
-- System overview is documented.
-- Data model is documented.
-- API design is documented.
-- Kanban board is initialized and updated.
-- Changes are committed and pushed.
+POST /api/families
+GET  /api/families/{familyId}
 
-## Sprint 1 Entry Criteria
+POST /api/users
+GET  /api/users/{userId}
+GET  /api/users/family/{familyId}
 
-Sprint 1 can start when Sprint 0 documentation is committed and pushed.
+POST /api/meals
+GET  /api/meals/{mealId}
+GET  /api/meals/child/{childId}
+GET  /api/meals/family/{familyId}
+GET  /api/meals/family/{familyId}/pending-review
+```
 
-Sprint 1 will start with Spring Boot backend setup.
+## Sprint 1 Next Step
+
+Implement parent review workflow and family recipe API.
