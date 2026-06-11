@@ -1,4 +1,4 @@
-﻿# Kanban Board - Diabet Asistan
+# Kanban Board - Diabet Asistan
 
 ## Board Columns
 

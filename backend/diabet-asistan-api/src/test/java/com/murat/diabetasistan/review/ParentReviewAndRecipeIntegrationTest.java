@@ -1,32 +1,30 @@
 package com.murat.diabetasistan.review;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.Instant;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ParentReviewAndRecipeIntegrationTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    private final HttpClient httpClient = HttpClient.newHttpClient();
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Value("${local.server.port}")
+    private int port;
 
     @Test
     void parentCanCorrectMealAndCreateFamilyRecipe() throws Exception {
@@ -44,21 +42,19 @@ class ParentReviewAndRecipeIntegrationTest {
                 }
                 """.formatted(parentId);
 
-        mockMvc.perform(post("/api/meals/{mealId}/reviews", mealId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(correctionJson))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.reviewStatus").value("CORRECTED"))
-                .andExpect(jsonPath("$.originalCarbsGram").value(60))
-                .andExpect(jsonPath("$.correctedCarbsGram").value(70))
-                .andExpect(jsonPath("$.meal.status").value("CORRECTED"))
-                .andExpect(jsonPath("$.meal.finalCarbsGram").value(70))
-                .andExpect(jsonPath("$.meal.reviewedByUserId").value(parentId));
+        JsonNode review = postJson("/api/meals/" + mealId + "/reviews", correctionJson, 201);
 
-        mockMvc.perform(get("/api/meals/{mealId}", mealId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("CORRECTED"))
-                .andExpect(jsonPath("$.finalCarbsGram").value(70));
+        assertEquals("CORRECTED", review.get("reviewStatus").asText());
+        assertEquals(60, review.get("originalCarbsGram").asInt());
+        assertEquals(70, review.get("correctedCarbsGram").asInt());
+        assertEquals("CORRECTED", review.get("meal").get("status").asText());
+        assertEquals(70, review.get("meal").get("finalCarbsGram").asInt());
+        assertEquals(parentId, review.get("meal").get("reviewedByUserId").asLong());
+
+        JsonNode correctedMeal = getJson("/api/meals/" + mealId, 200);
+
+        assertEquals("CORRECTED", correctedMeal.get("status").asText());
+        assertEquals(70, correctedMeal.get("finalCarbsGram").asInt());
 
         String recipeJson = """
                 {
@@ -72,38 +68,34 @@ class ParentReviewAndRecipeIntegrationTest {
                 }
                 """.formatted(familyId, parentId);
 
-        mockMvc.perform(post("/api/family-recipes")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(recipeJson))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value("Lentil soup"))
-                .andExpect(jsonPath("$.totalCarbsGram").value(180))
-                .andExpect(jsonPath("$.servings").value(6))
-                .andExpect(jsonPath("$.carbsPerServing").value(30))
-                .andExpect(jsonPath("$.active").value(true));
+        JsonNode recipe = postJson("/api/family-recipes", recipeJson, 201);
 
-        mockMvc.perform(get("/api/family-recipes/family/{familyId}", familyId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].name").value("Lentil soup"))
-                .andExpect(jsonPath("$[0].carbsPerServing").value(30));
+        assertEquals("Lentil soup", recipe.get("name").asText());
+        assertEquals(180, recipe.get("totalCarbsGram").asInt());
+        assertEquals(6, recipe.get("servings").asInt());
+        assertEquals(30, recipe.get("carbsPerServing").asInt());
+        assertTrue(recipe.get("active").asBoolean());
+
+        JsonNode recipes = getJson("/api/family-recipes/family/" + familyId, 200);
+
+        assertTrue(recipes.isArray());
+        assertEquals(1, recipes.size());
+        assertEquals("Lentil soup", recipes.get(0).get("name").asText());
+        assertEquals(30, recipes.get(0).get("carbsPerServing").asInt());
     }
 
     private Long createFamily() throws Exception {
-        String response = mockMvc.perform(post("/api/families")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "name": "Review Recipe Demo Family"
-                                }
-                                """))
-                .andExpect(status().isCreated())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+        JsonNode family = postJson(
+                "/api/families",
+                """
+                {
+                  "name": "Review Recipe Demo Family"
+                }
+                """,
+                201
+        );
 
-        JsonNode jsonNode = objectMapper.readTree(response);
-        return jsonNode.get("id").asLong();
+        return family.get("id").asLong();
     }
 
     private Long createUser(Long familyId, String displayName, String role) throws Exception {
@@ -116,16 +108,8 @@ class ParentReviewAndRecipeIntegrationTest {
                 }
                 """.formatted(familyId, displayName, role);
 
-        String response = mockMvc.perform(post("/api/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(userJson))
-                .andExpect(status().isCreated())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        JsonNode jsonNode = objectMapper.readTree(response);
-        return jsonNode.get("id").asLong();
+        JsonNode user = postJson("/api/users", userJson, 201);
+        return user.get("id").asLong();
     }
 
     private Long createMeal(Long familyId, Long childId) throws Exception {
@@ -143,15 +127,36 @@ class ParentReviewAndRecipeIntegrationTest {
                 }
                 """.formatted(familyId, childId, Instant.parse("2026-06-11T18:30:00Z"), childId);
 
-        String response = mockMvc.perform(post("/api/meals")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mealJson))
-                .andExpect(status().isCreated())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+        JsonNode meal = postJson("/api/meals", mealJson, 201);
+        return meal.get("id").asLong();
+    }
 
-        JsonNode jsonNode = objectMapper.readTree(response);
-        return jsonNode.get("id").asLong();
+    private JsonNode postJson(String path, String jsonBody, int expectedStatus) throws Exception {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl() + path))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        assertEquals(expectedStatus, response.statusCode(), response.body());
+
+        return objectMapper.readTree(response.body());
+    }
+
+    private JsonNode getJson(String path, int expectedStatus) throws Exception {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl() + path))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        assertEquals(expectedStatus, response.statusCode(), response.body());
+
+        return objectMapper.readTree(response.body());
+    }
+
+    private String baseUrl() {
+        return "http://localhost:" + port;
     }
 }
