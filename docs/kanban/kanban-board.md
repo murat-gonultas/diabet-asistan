@@ -36,19 +36,24 @@ The goal is speed with control. Do not open too many tasks at the same time.
 
 ## Ready
 
-### Sprint 1 Continued - Parent Review and Recipes
+### Sprint 1 Finalization
 
-- R-001 Create ParentReview entity
-- R-002 List pending meals for parent review
-- R-003 Approve meal carbohydrate value
-- R-004 Correct meal carbohydrate value
-- R-005 Store parent comment
-- R-006 Store original and corrected values
-- R-007 Update meal final carbohydrate value
-- FR-001 Create FamilyRecipe entity
-- FR-002 Create family recipe endpoint
-- FR-003 List recipes by family
-- FR-004 Calculate carbs per serving
+- T-001 Add manual API smoke test file
+- D-001 Update backend README section
+- D-002 Update API design docs with implemented status
+- Q-001 Run manual backend smoke test
+- Q-002 Close Sprint 1 summary
+
+### Sprint 2 - Flutter MVP Preparation
+
+- F-001 Create Flutter app
+- F-002 Add demo child/parent mode
+- F-003 Add API client
+- F-004 Add meal list screen
+- F-005 Add create meal screen
+- F-006 Add parent review screen
+- F-007 Add recipe list screen
+- F-008 Add recipe creation screen
 
 ---
 
@@ -117,6 +122,17 @@ The goal is speed with control. Do not open too many tasks at the same time.
 - M-007 List meals by family
 - M-008 Validate carbohydrate values
 - M-009 Add photo reference field
+- R-001 Create ParentReview entity
+- R-002 List pending meals for parent review
+- R-003 Approve meal carbohydrate value
+- R-004 Correct meal carbohydrate value
+- R-005 Store parent comment
+- R-006 Store original and corrected values
+- R-007 Update meal final carbohydrate value
+- FR-001 Create FamilyRecipe entity
+- FR-002 Create family recipe endpoint
+- FR-003 List recipes by family
+- FR-004 Calculate carbs per serving
 
 ---
 
@@ -137,8 +153,14 @@ GET  /api/meals/{mealId}
 GET  /api/meals/child/{childId}
 GET  /api/meals/family/{familyId}
 GET  /api/meals/family/{familyId}/pending-review
+
+POST /api/meals/{mealId}/reviews
+GET  /api/meals/{mealId}/reviews
+
+POST /api/family-recipes
+GET  /api/family-recipes/family/{familyId}
 ```
 
 ## Sprint 1 Next Step
 
-Implement parent review workflow and family recipe API.
+Finalize Sprint 1 with backend API smoke tests and README/API documentation update.

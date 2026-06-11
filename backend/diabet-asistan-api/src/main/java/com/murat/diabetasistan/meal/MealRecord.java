@@ -108,6 +108,18 @@ public class MealRecord {
         updatedAt = Instant.now();
     }
 
+    public void approveByParent(Long parentId) {
+        this.finalCarbsGram = this.estimatedCarbsGram;
+        this.reviewedByUserId = parentId;
+        this.status = MealStatus.APPROVED;
+    }
+
+    public void correctByParent(Long parentId, BigDecimal correctedCarbsGram) {
+        this.finalCarbsGram = correctedCarbsGram;
+        this.reviewedByUserId = parentId;
+        this.status = MealStatus.CORRECTED;
+    }
+
     public Long getId() {
         return id;
     }
